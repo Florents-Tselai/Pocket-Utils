@@ -1,0 +1,27 @@
+#!/bin/sh
+
+DB_FILE=./pocket.db
+
+echo "Total items:" $(sqlite3 $DB_FILE 'select count(distinct item_id) from items')
+
+for state in unread archive; do
+  for sort in newest oldest title site; do
+
+    json_file="data_${state}_${sort}_$(date -I).json"
+    echo "Intermediate file:" $json_file
+
+    curl -sL https://getpocket.com/v3/get --insecure -X POST \
+      -H "Content-Type: application/json" -H "X-Accept: application/json" \
+      -d "{\"consumer_key\": \"$POCKET_CONSUMER_KEY\", \"access_token\": \"$POCKET_ACCESS_TOKEN\", \"state\":\"$state\", \"sort\":\"$sort\", \"detailType\":\"complete\"}" |
+      jq '.list | to_entries | map(.value)' |
+      tee $json_file |
+      sqlite-utils insert --replace --pk item_id $DB_FILE items -
+
+    echo "Total items:" $(sqlite3 $DB_FILE 'select count(distinct item_id) from items')
+  done
+done
+
+echo "Total items:" $(sqlite3 $DB_FILE 'select count(distinct item_id) from items')
+
+echo "Enabling FTS5 ..."
+sqlite-utils enable-fts --create-triggers --fts5 $DB_FILE items given_title given_url excerpt authors amp_url 2>/dev/null

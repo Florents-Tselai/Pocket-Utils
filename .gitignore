@@ -1,0 +1,5 @@
+*.json
+file-part*
+*.db
+*.sqlite3
+.idea/

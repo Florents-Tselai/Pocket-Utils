@@ -1,0 +1,24 @@
+#!/bin/sh
+
+START_DIR=$(pwd)
+
+# Don't pollute current directory, work in a temp one
+TMP_DIR=$(mktemp -d)
+cd $TMP_DIR
+
+FILE_PART_PREFIX=file-part
+
+split -l 1000 - $FILE_PART_PREFIX
+
+function process_part() {
+  echo "Processing $1"
+  cat $1 | jq -c --raw-input --slurp \
+    'split("\n") | .[0:-1] | map({item_id: . , action: "tags_clear"}) | {consumer_key: env.POCKET_CONSUMER_KEY, access_token: env.POCKET_ACCESS_TOKEN, actions: .}' |
+    curl -L https://getpocket.com/v3/send --insecure -X POST -H "Content-Type: application/json" -H "X-Accept: application/json" -d @-
+
+}
+export -f process_part
+
+ls ./$FILE_PART_PREFIX* | xargs -n1 -P20 -I {} bash -c 'process_part {}'
+
+cd $START_DIR
