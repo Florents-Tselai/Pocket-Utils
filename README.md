@@ -5,7 +5,7 @@ CLI tools for interacting with the [Pocket API](https://getpocket.com/developer/
 ## Requirements
 * [jq](https://github.com/stedolan/jq)
 * [sqlite-utils](https://github.com/simonw/sqlite-utils)
-* env variables required: `POCKET_CONSUMER_KEY`, `POCKET_ACCESS_TOKEN`
+* env variables required: `POCKET_CONSUMER_KEY`, `POCKET_ACCESS_TOKEN` . No simple solutions :( . You have to go through the [authentication process](https://getpocket.com/developer/docs/authentication)
 
 ## Examples
 
