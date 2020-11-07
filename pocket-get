@@ -7,6 +7,5 @@ while (("$#" >= 2)); do
   request_data=$(jq --arg param $param --arg value $value '. + {($param): $value}' <<<"$request_data")
   shift 2
 done
-echo $request_data
 
 curl -L https://getpocket.com/v3/get --insecure -X POST -H "Content-Type: application/json" -H "X-Accept: application/json" -d @- <<<$request_data
