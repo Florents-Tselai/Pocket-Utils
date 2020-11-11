@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# TODO: handle tags --> Probably something like pocket-add tag1 tag2 http://url1 http://url2
+for i in $@; do
+   curl -sL https://getpocket.com/v3/add --insecure -X POST \
+      -H "Content-Type: application/json" -H "X-Accept: application/json" \
+      -d "{\"consumer_key\": \"$POCKET_CONSUMER_KEY\", \"access_token\": \"$POCKET_ACCESS_TOKEN\", \"url\":\"$i\"}"
+done
