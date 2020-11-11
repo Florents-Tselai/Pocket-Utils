@@ -1,0 +1,20 @@
+#!/bin/sh
+
+DB_FILE=./pocket.db
+
+start_date=$1
+end_date=$2
+window_size=$(expr $3 "*" 86400)
+
+start_epoch=$(date -d "$start_date" "+%s")
+current_epoch=$start_epoch
+end_epoch=$(date -d "$end_date" "+%s")
+
+while [ $current_epoch -lt $end_epoch ]; do
+  current_epoch=$(expr $current_epoch + $window_size)
+  for sort in oldest newest title site; do
+    ./pocket-get since $current_epoch sort $sort | ./pocket-save-db
+
+    echo "Total items:" $(sqlite3 $DB_FILE 'select count(distinct item_id) from items')
+  done
+done
