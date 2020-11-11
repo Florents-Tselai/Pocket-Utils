@@ -1,6 +1,6 @@
 #!/bin/sh
 
-request_data="{\"consumer_key\": \"$POCKET_CONSUMER_KEY\", \"access_token\": \"$POCKET_ACCESS_TOKEN\"}"
+request_data="{\"consumer_key\": \"$POCKET_CONSUMER_KEY\", \"access_token\": \"$POCKET_ACCESS_TOKEN\", \"detailType\":\"complete\"}"
 while (("$#" >= 2)); do
   param=$1
   value=$2
@@ -8,4 +8,4 @@ while (("$#" >= 2)); do
   shift 2
 done
 
-curl -L https://getpocket.com/v3/get --insecure -X POST -H "Content-Type: application/json" -H "X-Accept: application/json" -d @- <<<$request_data
+curl -sL https://getpocket.com/v3/get --insecure -X POST -H "Content-Type: application/json" -H "X-Accept: application/json" -d @- <<<$request_data
